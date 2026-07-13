@@ -1,6 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { Op, WhereOptions } from 'sequelize';
 import { Member } from 'src/modules/members/members.model';
+
+/** Optional filters for listing members. */
+export interface MemberFilters {
+  /** Case-insensitive substring matched against first name OR last name. */
+  search?: string;
+  /** Exact-match gender filter. */
+  gender?: string;
+}
 
 @Injectable()
 export class MembersRepository {
@@ -20,14 +29,47 @@ export class MembersRepository {
   }
 
   /**
-   * Fetches all members from the database.
+   * Fetches a page of members matching the given filters, together with the
+   * total count for pagination.
    *
-   *
-   * @returns {Promise<Member[]>} All members rows.
+   * @param {MemberFilters} filters - Optional filters: a case-insensitive name
+   *   search (first name OR last name) and an exact-match gender. When both are
+   *   given they are combined with AND.
+   * @param {number} limit - Maximum number of members to return.
+   * @param {number} offset - Number of members to skip before the page.
+   * @returns {Promise<{ rows: Member[]; count: number }>} The page of members
+   *   plus the total number of members matching the filters.
    * @throws {Error} If the database query fails.
    */
-  async findAll(): Promise<Member[]> {
-    return this.memberModel.findAll();
+  async findAll(
+    filters: MemberFilters,
+    limit: number,
+    offset: number,
+  ): Promise<{ rows: Member[]; count: number }> {
+    const where: WhereOptions<Member> = {};
+
+    if (filters.gender) {
+      where.gender = filters.gender;
+    }
+
+    if (filters.search) {
+      where[Op.or as any] = [
+        { firstName: { [Op.iLike]: `%${filters.search}%` } },
+        { lastName: { [Op.iLike]: `%${filters.search}%` } },
+      ];
+    }
+
+    return this.memberModel.findAndCountAll({
+      where,
+      limit,
+      offset,
+      // Stable ordering so pages don't overlap or skip rows between requests.
+      order: [
+        ['lastName', 'ASC'],
+        ['firstName', 'ASC'],
+        ['id', 'ASC'],
+      ],
+    });
   }
 
   /**

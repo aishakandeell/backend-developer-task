@@ -52,9 +52,16 @@ Your API should follow **RESTful conventions** and common best practices (clea
 
 The endpoint that returns shops with their products performs poorly on large datasets. Can you improve it so it scales well and avoids unnecessary database work?
 
+### **The endpoint ran N+1 query**
+<!-- to fix that I added a Shop hasMany Product association and load products with Sequelize's include: { separate: true }, so it runs 2 queries total (one for shops, one batched WHERE shopId IN (...) for their products) regardless of shop count. -->
+
+<!-- Added a page/limit query -->
+
 ### **We have so many members in our club!**
 
 The API that fetches all members returns an array with a massive amount of objects. This can add load to the client-side. How can we fix this?
+
+**Fix:** `GET /members` no longer returns the whole member base. Added pagination (`page`/`limit`, default 20) via `findAndCountAll` returning `{ data, total, totalPages }`, a case-insensitive `?search=` on first/last name (`Op.iLike`), and a validated `?gender=male|female` filter — so clients fetch a small, targeted page (e.g. `?search=ahmed&gender=male&page=1&limit=20`) instead of a 50k-object array.
 
 ### **Validation and correctness**
 

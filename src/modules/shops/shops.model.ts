@@ -4,7 +4,9 @@ import {
   DataType,
   PrimaryKey,
   Model,
+  HasMany,
 } from 'sequelize-typescript';
+import { Product } from 'src/modules/products/products.model';
 
 @Table({ tableName: 'shops' })
 export class Shop extends Model<Shop> {
@@ -26,4 +28,7 @@ export class Shop extends Model<Shop> {
 
   @Column({ type: DataType.STRING(32), allowNull: false })
   availability: string;
+
+  @HasMany(() => Product)
+  products?: Product[];
 }

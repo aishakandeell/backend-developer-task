@@ -4,13 +4,16 @@ import {
   Post,
   Delete,
   Param,
+  Query,
   Body,
   Patch,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDTO } from './dto/create-member.dto';
 import { UpdateMemberDTO } from './dto/update-member.dto';
+import { FindMembersQueryDTO } from './dto/find-members-query.dto';
 import { MemberDTO } from './dto/member.dto';
+import { PaginatedDTO } from 'src/common/dto/paginated.dto';
 
 @Controller('members')
 export class MembersController {
@@ -22,8 +25,10 @@ export class MembersController {
   }
 
   @Get()
-  async findAll(): Promise<MemberDTO[]> {
-    return this.membersService.findAll();
+  async findAll(
+    @Query() query: FindMembersQueryDTO,
+  ): Promise<PaginatedDTO<MemberDTO>> {
+    return this.membersService.findAll(query);
   }
 
   @Get(':id')

@@ -5,6 +5,7 @@ import {
   Put,
   Delete,
   Param,
+  Query,
   Body,
 } from '@nestjs/common';
 import { ShopsService } from './shops.service';
@@ -12,6 +13,8 @@ import { CreateShopDTO } from './dto/create-shop.dto';
 import { UpdateShopDTO } from './dto/update-shop.dto';
 import { ShopDTO } from './dto/shop.dto';
 import { ShopWithProductsDTO } from 'src/modules/shops/dto/shop-with-products.dto';
+import { ShopsWithProductsQueryDTO } from 'src/modules/shops/dto/shops-with-products-query.dto';
+import { PaginatedDTO } from 'src/common/dto/paginated.dto';
 
 @Controller('shops')
 export class ShopsController {
@@ -28,8 +31,10 @@ export class ShopsController {
   }
 
   @Get('with-products')
-  async findAllWithProducts(): Promise<ShopWithProductsDTO[]> {
-    return this.shopsService.findAllWithProducts();
+  async findAllWithProducts(
+    @Query() query: ShopsWithProductsQueryDTO,
+  ): Promise<PaginatedDTO<ShopWithProductsDTO>> {
+    return this.shopsService.findAllWithProducts(query);
   }
 
   @Get(':id')
