@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PaginatedDTO } from 'src/common/dto/paginated.dto';
 import { CreateShopDTO } from 'src/modules/shops/dto/create-shop.dto';
 import { ShopWithProductsDTO } from 'src/modules/shops/dto/shop-with-products.dto';
@@ -51,15 +51,49 @@ export class ShopsService {
     };
   }
 
+  /**
+   * Fetches a single shop by ID.
+   * @param id - The shop ID.
+   * @returns The shop.
+   * @throws {NotFoundException} If no shop exists with the given ID.
+   */
   async findOne(id: string): Promise<ShopDTO> {
-    return this.repository.findOne(id);
+    const shop = await this.repository.findOne(id);
+
+    if (!shop) {
+      throw new NotFoundException(`Shop with id "${id}" not found`);
+    }
+
+    return shop;
   }
 
+  /**
+   * Updates an existing shop.
+   * @param id - The shop ID.
+   * @param shop - The fields to update.
+   * @returns The updated shop.
+   * @throws {NotFoundException} If no shop exists with the given ID.
+   */
   async update(id: string, shop: UpdateShopDTO): Promise<ShopDTO> {
-    return this.repository.update(id, shop);
+    const updated = await this.repository.update(id, shop);
+
+    if (!updated) {
+      throw new NotFoundException(`Shop with id "${id}" not found`);
+    }
+
+    return updated;
   }
 
-  async delete(id: string) {
-    return this.repository.delete(id);
+  /**
+   * Deletes a shop by ID.
+   * @param id - The shop ID.
+   * @throws {NotFoundException} If no shop exists with the given ID.
+   */
+  async delete(id: string): Promise<void> {
+    const deletedCount = await this.repository.delete(id);
+
+    if (deletedCount === 0) {
+      throw new NotFoundException(`Shop with id "${id}" not found`);
+    }
   }
 }

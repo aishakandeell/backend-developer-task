@@ -7,6 +7,9 @@ import {
   Query,
   Body,
   Patch,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDTO } from './dto/create-member.dto';
@@ -32,20 +35,23 @@ export class MembersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<MemberDTO> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<MemberDTO> {
     return this.membersService.findOne(id);
   }
 
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateMemberDto: UpdateMemberDTO,
   ): Promise<MemberDTO> {
     return this.membersService.update(id, updateMemberDto);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.membersService.delete(id);
   }
 }

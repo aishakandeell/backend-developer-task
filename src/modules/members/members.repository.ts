@@ -76,11 +76,23 @@ export class MembersRepository {
    * Fetches a single member by ID.
    *
    * @param {string} id - Member ID to look up.
-   * @returns {Promise<Member>} The member row (can be `null` at runtime if not found).
+   * @returns {Promise<Member | null>} The member row, or `null` if not found.
    * @throws {Error} If the database query fails.
    */
-  async findOne(id: string): Promise<Member> {
+  async findOne(id: string): Promise<Member | null> {
     return this.memberModel.findByPk(id);
+  }
+
+  /**
+   * Counts how many members are linked to the given member as their central
+   * member (i.e. that member's family members).
+   *
+   * @param {string} centralMemberId - The central member's ID.
+   * @returns {Promise<number>} The number of family members.
+   * @throws {Error} If the database query fails.
+   */
+  async countFamilyMembers(centralMemberId: string): Promise<number> {
+    return this.memberModel.count({ where: { centralMemberId } });
   }
 
   /**
@@ -88,26 +100,27 @@ export class MembersRepository {
    *
    * @param {string} id - Member ID to update.
    * @param {Partial<Member>} member - Fields to update.
-   * @returns {Promise<Member>} The updated member row (can be `undefined` at runtime if not found).
+   * @returns {Promise<Member | null>} The updated member row, or `null` if no
+   *   row matched the given ID.
    * @throws {Error} If the database update fails.
    */
-  async update(id: string, member: Partial<Member>): Promise<Member> {
-    const result = await this.memberModel.update(member, {
+  async update(id: string, member: Partial<Member>): Promise<Member | null> {
+    const [, updatedRows] = await this.memberModel.update(member, {
       where: { id },
       returning: true,
     });
 
-    return result[1][0];
+    return updatedRows[0] ?? null;
   }
 
   /**
    * Deletes a member by ID.
    *
    * @param {string} id - Member ID to delete.
-   * @returns {Promise<void>} Resolves when the delete query finishes.
+   * @returns {Promise<number>} The number of rows deleted (0 if none matched).
    * @throws {Error} If the database delete fails.
    */
-  async delete(id: string): Promise<void> {
-    await this.memberModel.destroy({ where: { id } });
+  async delete(id: string): Promise<number> {
+    return this.memberModel.destroy({ where: { id } });
   }
 }

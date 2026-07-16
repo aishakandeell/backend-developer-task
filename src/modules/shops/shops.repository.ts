@@ -45,20 +45,20 @@ export class ShopsRepository {
     });
   }
 
-  async findOne(id: string): Promise<Shop> {
+  async findOne(id: string): Promise<Shop | null> {
     return this.shopModel.findByPk(id);
   }
 
-  async update(id: string, shop: Partial<Shop>): Promise<Shop> {
-    const result = await this.shopModel.update(shop, {
+  async update(id: string, shop: Partial<Shop>): Promise<Shop | null> {
+    const [, updatedRows] = await this.shopModel.update(shop, {
       where: { id },
       returning: true,
     });
 
-    return result[1][0];
+    return updatedRows[0] ?? null;
   }
 
-  async delete(id: string): Promise<void> {
-    await this.shopModel.destroy({ where: { id } });
+  async delete(id: string): Promise<number> {
+    return this.shopModel.destroy({ where: { id } });
   }
 }

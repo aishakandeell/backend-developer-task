@@ -31,9 +31,19 @@ export class Product extends Model<Product> {
   @Column({ type: DataType.TEXT, allowNull: false })
   description: string;
 
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  // Business rule: price must be positive (never zero or negative).
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    validate: { min: 1 },
+  })
   price: number;
 
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  // Business rule: stock count can not be less than 1 for a product.
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    validate: { min: 1 },
+  })
   stockCount: number;
 }

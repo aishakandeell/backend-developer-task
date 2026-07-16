@@ -7,6 +7,9 @@ import {
   Param,
   Query,
   Body,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ShopsService } from './shops.service';
 import { CreateShopDTO } from './dto/create-shop.dto';
@@ -38,20 +41,23 @@ export class ShopsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<ShopDTO> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ShopDTO> {
     return this.shopsService.findOne(id);
   }
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateShopDto: UpdateShopDTO,
   ): Promise<ShopDTO> {
     return this.shopsService.update(id, updateShopDto);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.shopsService.delete(id);
   }
 }

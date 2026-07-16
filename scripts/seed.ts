@@ -87,6 +87,7 @@ async function seed() {
       lastName: 'BlueRibbon',
       gender: i % 2 === 0 ? 'female' : 'male',
       dateOfBirth: '1995-01-01',
+      subscriptionDate: '2020-01-01',
       phone: `010${String(i).padStart(8, '0')}`,
     });
   }
