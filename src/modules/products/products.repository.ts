@@ -10,17 +10,6 @@ export class ProductsRepository {
   ) {}
 
   /**
-   * Fetches products matching the given exact-match filters.
-   *
-   * @param {Partial<Product>} filters - Fields to match exactly (e.g. shopId).
-   * @returns {Promise<Product[]>} The matching product rows.
-   * @throws {Error} If the database query fails.
-   */
-  async findWithFilter(filters: Partial<Product>): Promise<Product[]> {
-    return this.productModel.findAll({ where: filters });
-  }
-
-  /**
    * Creates a product row in the database.
    *
    * @param {Partial<Product>} product - Product fields to save.

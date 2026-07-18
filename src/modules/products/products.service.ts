@@ -30,16 +30,6 @@ export class ProductsService {
   }
 
   /**
-   * Fetches products matching the given exact-match filters.
-   * Used by other modules (e.g. shops) to load a shop's products.
-   * @param filter - Fields to match exactly (e.g. shopId).
-   * @returns The matching products.
-   */
-  async findWithFilter(filter: Partial<ProductDTO>): Promise<ProductDTO[]> {
-    return this.repository.findWithFilter(filter);
-  }
-
-  /**
    * Creates a new product.
    * @param product - The product to create.
    * @returns The created product.

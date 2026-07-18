@@ -11,10 +11,19 @@ import { ShopsRepository } from 'src/modules/shops/shops.repository';
 export class ShopsService {
   constructor(private readonly repository: ShopsRepository) {}
 
+  /**
+   * Creates a new shop.
+   * @param shop - The shop to create.
+   * @returns The created shop.
+   */
   async create(shop: CreateShopDTO): Promise<ShopDTO> {
     return this.repository.create(shop);
   }
 
+  /**
+   * Lists all shops.
+   * @returns All shops.
+   */
   async findAll(): Promise<ShopDTO[]> {
     return this.repository.findAll();
   }

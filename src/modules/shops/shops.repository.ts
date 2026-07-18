@@ -7,10 +7,23 @@ import { Product } from 'src/modules/products/products.model';
 export class ShopsRepository {
   constructor(@InjectModel(Shop) private readonly shopModel: typeof Shop) {}
 
+  /**
+   * Creates a shop row in the database.
+   *
+   * @param {Partial<Shop>} shop - Shop fields to save.
+   * @returns {Promise<Shop>} The created shop row.
+   * @throws {Error} If the database insert fails.
+   */
   async create(shop: Partial<Shop>): Promise<Shop> {
     return this.shopModel.create(shop);
   }
 
+  /**
+   * Fetches all shops from the database.
+   *
+   * @returns {Promise<Shop[]>} All shop rows.
+   * @throws {Error} If the database query fails.
+   */
   async findAll(): Promise<Shop[]> {
     return this.shopModel.findAll();
   }
@@ -45,10 +58,25 @@ export class ShopsRepository {
     });
   }
 
+  /**
+   * Fetches a single shop by ID.
+   *
+   * @param {string} id - Shop ID to look up.
+   * @returns {Promise<Shop | null>} The shop row, or `null` if not found.
+   * @throws {Error} If the database query fails.
+   */
   async findOne(id: string): Promise<Shop | null> {
     return this.shopModel.findByPk(id);
   }
 
+  /**
+   * Updates a shop by ID and returns the updated row.
+   *
+   * @param {string} id - Shop ID to update.
+   * @param {Partial<Shop>} shop - Fields to update.
+   * @returns {Promise<Shop | null>} The updated shop row, or `null` if no row matched.
+   * @throws {Error} If the database update fails.
+   */
   async update(id: string, shop: Partial<Shop>): Promise<Shop | null> {
     const [, updatedRows] = await this.shopModel.update(shop, {
       where: { id },
@@ -58,6 +86,13 @@ export class ShopsRepository {
     return updatedRows[0] ?? null;
   }
 
+  /**
+   * Deletes a shop by ID.
+   *
+   * @param {string} id - Shop ID to delete.
+   * @returns {Promise<number>} The number of rows deleted (0 if none matched).
+   * @throws {Error} If the database delete fails.
+   */
   async delete(id: string): Promise<number> {
     return this.shopModel.destroy({ where: { id } });
   }
