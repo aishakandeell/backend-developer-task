@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,6 +12,13 @@ import { JoiPipeModule } from 'nestjs-joi';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    // In-memory response cache, available app-wide. Individual routes opt in
+    // with CacheInterceptor; the default TTL below applies unless a route
+    // overrides it with @CacheTTL.
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000, // 60 seconds (milliseconds)
     }),
     SequelizeModule.forRootAsync({
       inject: [ConfigService],

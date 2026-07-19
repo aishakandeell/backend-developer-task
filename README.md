@@ -61,7 +61,7 @@ The endpoint that returns shops with their products performs poorly on large dat
 
 The API that fetches all members returns an array with a massive amount of objects. This can add load to the client-side. How can we fix this?
 
-**Fix:** `GET /members` no longer returns the whole member base. Added pagination (`page`/`limit`, default 20) via `findAndCountAll` returning `{ data, total, totalPages }`, a case-insensitive `?search=` on first/last name (`Op.iLike`), and a validated `?gender=male|female` filter — so clients fetch a small, targeted page (e.g. `?search=ahmed&gender=male&page=1&limit=20`) instead of a 50k-object array.
+<!-- <!-- to fix `GET /members` no longer returns the whole member base. Added batched results with a default page limit of 20, a case-insensitive on first/last name, and a gender filter so clients fetch a small, targeted page.  -->
 
 ### **Validation and correctness**
 
@@ -139,3 +139,58 @@ We’ll review your work based on: **Correctness**, **Performance**, **Code qual
 
 - Add caching where it makes sense (and explain what you cached and why).
 - Standardize error response shape (message + code + details) across the application.
+
+## Implementation Summary
+
+- Implemented full Products CRUD API with case-insensitive search.
+- Added pagination and filtering for Members.
+- Optimized Shops with Products to remove N+1 queries.
+- Standardized Joi validation across all DTOs.
+- Enforced member family-link and enum business rules.
+- Added proper HTTP errors and UUID validation.
+- Aligned repository return types with runtime behavior.
+- Added controller and service unit tests for all modules.
+- Cached the Shops-with-Products endpoint (60s TTL) since it is expensive but rarely changes.
+
+### Environment setup
+
+Copy `.env.example` to `.env` and set a valid Postgres connection string:
+
+```env
+DATABASE_URL=postgresql://<user>:<password>@localhost:5432/blue_ribbon
+PORT=3000
+```
+
+Then install, (optionally) seed a large dataset, and run:
+
+```bash
+npm install
+npm run seed      # optional: seeds 100 shops, 7k products, 50k members
+npm run start:dev
+```
+
+### API reference
+
+```
+# Products
+POST   /products
+GET    /products?search=app        # case-insensitive, partial match
+GET    /products/:id
+PATCH  /products/:id
+DELETE /products/:id
+
+# Members
+POST   /members
+GET    /members?search=ahmed&gender=male&page=1&limit=20
+GET    /members/:id
+PATCH  /members/:id
+DELETE /members/:id
+
+# Shops
+POST   /shops
+GET    /shops
+GET    /shops/with-products?page=1&limit=20   # paginated, cached 60s
+GET    /shops/:id
+PUT    /shops/:id
+DELETE /shops/:id
+```

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ShopsController } from './shops.controller';
 import { ShopsService } from './shops.service';
 
@@ -27,6 +28,9 @@ describe('ShopsController', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
+      // CacheModule provides CACHE_MANAGER, which the route's CacheInterceptor
+      // depends on.
+      imports: [CacheModule.register()],
       controllers: [ShopsController],
       providers: [{ provide: ShopsService, useValue: service }],
     }).compile();
