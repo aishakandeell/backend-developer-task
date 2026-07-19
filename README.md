@@ -154,18 +154,16 @@ We’ll review your work based on: **Correctness**, **Performance**, **Code qual
 
 ### Environment setup
 
-Copy `.env.example` to `.env` and set a valid Postgres connection string:
-
 ```env
 DATABASE_URL=postgresql://<user>:<password>@localhost:5432/blue_ribbon
 PORT=3000
 ```
 
-Then install, (optionally) seed a large dataset, and run:
+Then install, seed a large dataset, and run:
 
 ```bash
 npm install
-npm run seed      # optional: seeds 100 shops, 7k products, 50k members
+npm run seed       
 npm run start:dev
 ```
 
@@ -189,7 +187,7 @@ DELETE /members/:id
 # Shops
 POST   /shops
 GET    /shops
-GET    /shops/with-products?page=1&limit=20   # paginated, cached 60s
+GET    /shops/with-products?page=1&limit=20  
 GET    /shops/:id
 PUT    /shops/:id
 DELETE /shops/:id
